@@ -1,0 +1,163 @@
+alias g='git'
+alias k='kubectl'
+alias h='helm'
+alias gradlew='./gradlew'
+alias gradle='./gradlew'
+alias d='docker'
+alias cuts='cut -d" " -f'
+
+alias context='kubectl config current-context'
+alias debug='kubectl run -ti --rm=true debug --image=busybox'
+alias namespace='kubectl config set-context --current --namespace'
+
+alias knames='kubectl get -o "go-template={{range .items}}{{println .metadata.name}}{{end}}"'
+alias pod='kubectl describe pod'
+alias pods='kubectl get pods'
+
+alias watch='watch -n 1 '
+alias every='xargs -i '
+alias millis='date +%s%N | cut -b1-13'
+
+packpngstojpg() {
+        for filename in *.png; do
+                pngpacktojpg "$filename"
+        done
+}
+
+pngpacktojpg() {
+        convert -quality 75 -resize 80% $1 $(echo $1 | sed "s/.png/.jpg/g")
+}
+
+jenkins() {
+        export JENKINS_URL=$1
+}
+
+jauth() {
+        export JENKINS_AUTH="$(whoami):$1"
+}
+
+j() {
+        curl -L -H "$CRUMB" -X POST "$JENKINS_URL/scriptText" --user $JENKINS_AUTH -d "script=$1"
+}
+
+kapi-resources() {
+        kubectl api-resources $1 $2 $3 $4 $5 $6 $7 $8 $9
+}
+
+c9s() {
+        KUBECONFIG=~/.kube/$1.config.yaml k9s --kubeconfig ~/.kube/$1.config.yaml $2 $3 $4 $5 $6 $7 $8 $9
+}
+
+devup() {
+        load-secrets
+        ARTIFACTORY_USER=$(whoami) devcontainer up --workspace-folder "$1" $2 $3 $4 $5 $6 $7 $8 $9
+}
+
+actmyworkflow() {
+        echo "Please input the workflow"
+        local workflow="$(cat -)"
+        local work_dir=/tmp/actmyworkflow-${RANDOM}
+        mkdir -p "${work_dir}/.github/workflows"
+        pushd "${work_dir}"
+        git init
+        echo "${workflow}" >"${work_dir}/.github/workflows/test.yaml"
+        git add "${work_dir}/.github/workflows/test.yaml"
+        git commit -m "add workflow"
+        act "${1}"
+        popd
+        rm -fr "${work_dir}"
+}
+
+load-secrets() {
+        set -a && source .secrets && set +a
+}
+
+ghapi() {
+        local method="$(echo $1 | tr a-z A-Z)"
+        local gh=$2
+        local org=$3
+        curl -s -X "${method}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "$(grep $gh ~/.git-credentials)/api/v3/$org"
+}
+
+runnerreg() {
+        local gh=$1
+        local org=$2
+        echo 'getting runner registration token' >&2
+        ghapi post $gh "orgs/$org/actions/runners/registration-token" | jq -r .token
+}
+
+runnerreg2() {
+        local gh=$1
+        local org=$2
+        local token="$(runnerreg $gh $org)"
+        local data="$(jq -n --arg url https://$gh/$org --arg runner_event register '$ARGS.named')"
+        echo 'getting registration token pipeline service' >&2
+        curl -s -X POST \
+                -d "$data" \
+                -H "Accept: application/json" \
+                -H "Authorization: RemoteAuth ${token}" \
+                "https://$2/api/v3/actions/runner-registration"
+}
+
+scalesets() {
+        local method="$(echo $1 | tr a-z A-Z)"
+        local registration="$(runnerreg2 $2 $3)"
+        local token="$(echo $registration | jq -r .token)"
+        local url="$(echo $registration | jq -r .url)"
+        local full_url="${url}/_apis/runtime/runnerscalesets$4?api-version=6.0-preview.1$5"
+        echo "${method}: ${full_url}" >&2
+        curl -s -X "${method}" -H "Accept: application/json" -H "Authorization: Bearer ${token}" "${url}/_apis/runtime/runnerscalesets$4?api-version=6.0-preview.1$5"
+}
+
+scaleset() {
+        local gh=$1
+        local org=$2
+        local name=$3
+        scalesets get $gh $org | jq '.value | .[] | select(.name == "'$name'")'
+}
+
+scaleset_id() {
+        local gh=$1
+        local org=$2
+        local name=$3
+        scaleset $gh $org $name | jq -r .id
+}
+
+scaleset_delete() {
+        local gh=$1
+        local org=$2
+        local name=$3
+        local id=$(scaleset_id $gh $org $name)
+        if [ -z "$id" ]; then
+                echo "No scaleset found with name $name" >&2
+                return
+        fi
+        scalesets delete $gh $org /$id
+}
+
+scalesets_old() {
+        local gh=$1
+        local org=$2
+        local old=$(date -d '1 days ago' +'%s')
+        scalesets get $gh $org | jq '.value[] | select (.status=="offline") | select (.createdOn | .[0:19] +"Z" | fromdateiso8601 < '${old}' )'
+}
+
+scalesets_delete_old() {
+        local gh=$1
+        local org=$2
+        scalesets_old $gh $org | jq -r '"\(.name) \(.id)"' | while read name id; do
+                echo "Deleting scaleset $name with id $id" >&2
+                scalesets delete $gh $org /$id
+        done
+}
+
+sshvm() {
+        ssh-keygen -f "/home/$(whoami)/.ssh/known_hosts" -R "[localhost]:2222"
+        ssh -o StrictHostKeychecking=no ubuntu@localhost -p 2222
+}
+
+dudir() {
+        for i in $(ls -a $1); do du -hs $i; done | sort -h
+}
