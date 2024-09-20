@@ -115,11 +115,13 @@ if ! shopt -oq posix; then
                 . /etc/bash_completion
         fi
 fi
-. "$HOME/.cargo/env"
 
 export EDITOR='nvim'
 export VISUAL='nvim'
-
 export BROWSER=wslview
 
+export SCREENDIR=$HOME/.screen
+if [ -f "$HOME/.cargo/env" ]; then
+  . "$HOME/.cargo/env"
+fi
 eval "$(rbenv init -)"
