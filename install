@@ -11,6 +11,6 @@ dirs="$(find . -maxdepth 1 -mindepth 1 -type d | grep -v '^./.git$' | sed 's/^\.
 for dir in $dirs; do
   pushd "$dir" > /dev/null
   find . -mindepth 1 -type d | sed 's/^\.\///g' | xargs -i ${dry} mkdir -p ~/{}
-  ${dry} stow "$dir"
   popd > /dev/null
+  ${dry} stow "$dir"
 done
