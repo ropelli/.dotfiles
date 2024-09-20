@@ -1,10 +1,9 @@
 # .dotfiles
 
 My configuration files.
+(Un)installation scripts require `stow`.
 
 ## Install
-
-`stow` required
 
 ```shell
 ./install
@@ -12,4 +11,14 @@ My configuration files.
 # dry run (see commands)
 ./install dry
 ```
+
+## Uninstall
+
+```shell
+./uninstall
+
+# dry run (see commands)
+./uninstall dry
+```
+
 

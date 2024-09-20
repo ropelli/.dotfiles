@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+dry=""
+if [ "$1" = "dry" ]; then
+  dry="echo"
+fi
+
+dirs="$(find . -maxdepth 1 -mindepth 1 -type d | grep -v '^./.git$' | sed 's/^\.\///g')"
+
+for dir in $dirs; do
+  ${dry} stow -D "$dir"
+done
