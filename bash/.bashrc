@@ -104,6 +104,12 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 if [ -f ~/.bash_aliases ]; then
         . ~/.bash_aliases
 fi
+if [ -f ~/.bash_aliases_private ]; then
+        . ~/.bash_aliases_private
+fi
+if [ -f ~/.bash_aliases_work ]; then
+        . ~/.bash_aliases_work
+fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -122,13 +128,15 @@ export BROWSER=wslview
 
 export SCREENDIR=$HOME/.screen
 if [ -f "$HOME/.cargo/env" ]; then
-  . "$HOME/.cargo/env"
+        . "$HOME/.cargo/env"
 fi
 
 if which rbenv; then
-  eval "$(rbenv init -)"
+        eval "$(rbenv init -)"
 fi
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [ -d "$HOME/.nvm" ]; then
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+fi

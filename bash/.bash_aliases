@@ -75,10 +75,10 @@ load-secrets() {
 ghapi() {
         local method="$(echo $1 | tr a-z A-Z)"
         local gh=$2
-        local org=$3
+        local path=$3
         curl -s -X "${method}" \
                 -H "Accept: application/vnd.github.v3+json" \
-                "$(grep $gh ~/.git-credentials)/api/v3/$org"
+                "$(grep $gh ~/.git-credentials)/api/v3/$path"
 }
 
 runnerreg() {
@@ -154,8 +154,9 @@ scalesets_delete_old() {
 }
 
 sshvm() {
-        ssh-keygen -f "/home/$(whoami)/.ssh/known_hosts" -R "[localhost]:2222"
-        ssh -o StrictHostKeychecking=no ubuntu@localhost -p 2222
+        local port=${1:-2222}
+        ssh-keygen -f "/home/$(whoami)/.ssh/known_hosts" -R "[localhost]:${port}"
+        ssh -o StrictHostKeychecking=no ubuntu@localhost -p ${port}
 }
 
 dudir() {
