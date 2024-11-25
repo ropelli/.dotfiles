@@ -163,14 +163,14 @@ dudir() {
         for i in $(ls -a $1); do du -hs $i; done | sort -h
 }
 
-gen-tmdevs() {
+tms-gen-dev() {
         for link in ~/dev-sessions/*; do
                 session_name=$(basename "$link")
                 if [ -d "$link" ]; then
                         cat <<EOF > ~/.config/tmuxinator/"$session_name".yml
 name: $session_name
 root: ~/dev-sessions/$session_name
-
+attach: false
 windows:
 - $session_name:
     layout: tiled
@@ -180,5 +180,21 @@ windows:
     - bash
 EOF
                 fi
+        done
+}
+
+tms-start() {
+        local sessions
+        sessions="$(tmuxinator list | tail -n 1)"
+        for session in ${sessions}; do
+                tmuxinator start "$session"
+        done
+}
+
+tms-stop() {
+        local sessions
+        sessions="$(tmuxinator list | tail -n 1)"
+        for session in ${sessions}; do
+                tmuxinator stop "$session"
         done
 }
