@@ -11,12 +11,10 @@ ${dry} mkdir -p ~/.config
 dirs="$(find . -maxdepth 1 -mindepth 1 -type d | grep -v '^./.git$' | sed 's/^\.\///g')"
 
 for dir in $dirs; do
-  stow_flags=''
   if [ -f "$dir/.mkdirs" ]; then
-    stow_flags='--ignore "\.mkdirs"'
     pushd "$dir" > /dev/null
     find . -mindepth 1 -type d | sed 's/^\.\///g' | xargs -i ${dry} mkdir -p ~/{}
     popd > /dev/null
   fi
-  ${dry} stow ${stow_flags} "$dir"
+  ${dry} stow "$dir"
 done
