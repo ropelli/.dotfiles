@@ -162,3 +162,23 @@ sshvm() {
 dudir() {
         for i in $(ls -a $1); do du -hs $i; done | sort -h
 }
+
+gen-tmdevs() {
+        for link in ~/dev-sessions/*; do
+                session_name=$(basename "$link")
+                if [ -d "$link" ]; then
+                        cat <<EOF > ~/.config/tmuxinator/"$session_name".yml
+name: $session_name
+root: ~/dev-sessions/$session_name
+
+windows:
+- $session_name:
+    layout: tiled
+    panes:
+    - nvim
+    - lazygit
+    - bash
+EOF
+                fi
+        done
+}
