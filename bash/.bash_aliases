@@ -76,9 +76,10 @@ ghapi() {
         local method="$(echo $1 | tr a-z A-Z)"
         local gh=$2
         local path=$3
+        local url_prefix="$(grep $gh ~/.git-credentials)"
         curl -s -X "${method}" \
                 -H "Accept: application/vnd.github.v3+json" \
-                "$(grep $gh ~/.git-credentials)/api/v3/$path"
+                "${url_prefix}/api/v3/$path"
 }
 
 runnerreg() {
@@ -92,23 +93,34 @@ runnerreg2() {
         local gh=$1
         local org=$2
         local token="$(runnerreg $gh $org)"
-        local data="$(jq -n --arg url https://$gh/$org --arg runner_event register '$ARGS.named')"
+        local gh_host="$(grep $gh ~/.git-credentials | cut -d'@' -f2)"
+        local data="$(jq -n --arg url https://$gh_host/$org --arg runner_event register '$ARGS.named')"
         echo 'getting registration token pipeline service' >&2
         curl -s -X POST \
                 -d "$data" \
                 -H "Accept: application/json" \
                 -H "Authorization: RemoteAuth ${token}" \
-                "https://$2/api/v3/actions/runner-registration"
+                "https://$gh_host/api/v3/actions/runner-registration"
 }
 
-scalesets() {
+gh-apis() {
         local method="$(echo $1 | tr a-z A-Z)"
         local registration="$(runnerreg2 $2 $3)"
         local token="$(echo $registration | jq -r .token)"
         local url="$(echo $registration | jq -r .url)"
-        local full_url="${url}/_apis/runtime/runnerscalesets$4?api-version=6.0-preview.1$5"
+        local full_url="${url}/_apis/$4?api-version=6.0-preview.1$5"
         echo "${method}: ${full_url}" >&2
-        curl -s -X "${method}" -H "Accept: application/json" -H "Authorization: Bearer ${token}" "${url}/_apis/runtime/runnerscalesets$4?api-version=6.0-preview.1$5"
+        curl -s -X "${method}" \
+                -H "Accept: application/json" \
+                -H "Authorization: Bearer ${token}" \
+                "${full_url}"
+}
+
+scalesets() {
+        local method=$1
+        local gh=$2
+        local org=$3
+        gh-apis "$method" "$gh" "$org" "runtime/runnerscalesets$4" "$5"
 }
 
 scaleset() {
@@ -176,8 +188,7 @@ windows:
     layout: tiled
     panes:
     - nvim
-    - lazygit
-    - bash
+    -
 EOF
                 fi
         done
