@@ -2,11 +2,11 @@ name: home
 root: ~/
 attach: false
 windows:
-  - bash:
-      layout: main-vertical
-      panes:
-        - clear
-        - clear
-  - nvim: nvim
-  - htop: htop
+- bash:
+    layout: main-vertical
+    panes:
+      - clear
+      - clear
+- nvim: nvim
+- htop: htop
 
