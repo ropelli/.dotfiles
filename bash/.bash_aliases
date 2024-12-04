@@ -209,3 +209,19 @@ tms-stop() {
                 tmuxinator stop "$session"
         done
 }
+
+ghauth() {
+        export GITHUB_TOKEN
+        GITHUB_TOKEN=$(grep "$1" ~/.git-credentials | cut -d':' -f3 | cut -d'@' -f1)
+}
+
+wincd() {
+        local win_path
+        if [ -z "$1" ]; then
+          win_path=$(wslclip --get | tr -d '\r')
+        else
+          win_path=$(echo "$1" | tr -d '\r')
+        fi
+        path=$(wslpath "$win_path")
+        cd "$path" || return 1
+}
