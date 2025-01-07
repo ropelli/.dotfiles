@@ -1,5 +1,5 @@
 name: home
-root: ~/
+root: ~
 attach: false
 windows:
 - bash:
@@ -8,5 +8,5 @@ windows:
       - clear
       - clear
 - nvim: nvim
-- htop: htop
+- htop: btop
 
