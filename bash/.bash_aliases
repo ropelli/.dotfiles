@@ -28,16 +28,42 @@ pngpacktojpg() {
   convert -quality 75 -resize 80% $1 $(echo $1 | sed "s/.png/.jpg/g")
 }
 
+
+selector() {
+  local history_file
+  history_file=$1
+  if [ ! -f "$history_file" ]; then
+    echo new >"$history_file"
+  fi
+  selection=$(cat "$history_file" | fzf)
+  if [ "$selection" == "new" ]; then
+    read -r -p "Enter a new item: " selection
+    echo "$selection" >> "$history_file"
+  fi
+  echo "$selection"
+}
+
+jenkins-auth() {
+  export full_jenkins_url
+  if ! full_jenkins_url=$(selector ~/.jenkins-auth) ; then
+    return 1
+  fi
+  export JENKINS_URL
+  JENKINS_URL=$(echo "$full_jenkins_url" | cut -d":" -f1)'://'$(echo "$full_jenkins_url" | cut -d'@' -f2)
+  export JENKINS_AUTH
+  JENKINS_AUTH=$(echo "$full_jenkins_url" | cut -d '/' -f3 | cut -d'@' -f1)
+}
+
 jenkins() {
-  export JENKINS_URL=$1
-}
-
-jauth() {
-  export JENKINS_AUTH="$(whoami):$1"
-}
-
-j() {
-  curl -L -H "$CRUMB" -X POST "$JENKINS_URL/scriptText" --user $JENKINS_AUTH -d "script=$1"
+  local script
+  if [ -z "$1" ]; then
+    while read -r -p '>> ' script_line; do
+      script+="$script_line"$'\n'
+    done
+  else
+    script="$1"
+  fi
+  curl -sk --fail-with-body -L -H "$CRUMB" -X POST "$JENKINS_URL/scriptText" --user "$JENKINS_AUTH" -d "script=${script}"
 }
 
 kapi-resources() {
@@ -195,6 +221,11 @@ EOF
 }
 
 tms-start() {
+  local yamls
+  yamls=$(find ~/.config/tmuxinator -name '*.yaml' ! -name '*-disabled.yaml')
+  for yaml in ${yamls}; do
+    cp "$yaml" "${yaml//.yaml/.yml}"
+  done
   local sessions
   sessions="$(tmuxinator list | tail -n 1)"
   for session in ${sessions}; do
@@ -225,3 +256,17 @@ wincd() {
   path=$(wslpath "$win_path")
   cd "$path" || return 1
 }
+
+nnncd() {
+  [ "${NNNLVL:-0}" -eq 0 ] || {
+    echo "nnn is already running"
+    return
+  }
+  export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+  command nnn "$@"
+  [ ! -f "$NNN_TMPFILE" ] || {
+    . "$NNN_TMPFILE"
+    rm -f -- "$NNN_TMPFILE" > /dev/null
+  }
+}
+
