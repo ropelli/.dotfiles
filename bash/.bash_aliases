@@ -30,14 +30,27 @@ pngpacktojpg() {
 
 
 selector() {
-  local history_file
   history_file=$1
-  if [ ! -f "$history_file" ]; then
-    echo new >"$history_file"
+  looking_for=$2
+  if [ -z "$looking_for" ]; then
+    looking_for=$(basename "$history_file" | sed 's#s$##g')
   fi
-  selection=$(cat "$history_file" | fzf)
+  if [ ! -f "$history_file" ]; then
+    touch "$history_file"
+  fi
+  history=$(cat "$history_file")
+  selection=$(echo -e "new\n$history" | fzf --header "($history_file)" --prompt "Select $looking_for (new for other): ")
+  return_code=$?
+  if [ -z "$selection" ]; then
+    echo 'No selection made'
+    return $return_code
+  fi
   if [ "$selection" == "new" ]; then
     read -r -p "Enter a new item: " selection
+    return_code=$?
+    if [ -z "$selection" ]; then
+      return $return_code
+    fi
     echo "$selection" >> "$history_file"
   fi
   echo "$selection"
@@ -54,6 +67,11 @@ jenkins-auth() {
   JENKINS_AUTH=$(echo "$full_jenkins_url" | cut -d '/' -f3 | cut -d'@' -f1)
 }
 
+auth() {
+  full=$(selector "$1")
+  echo "$full" | cut -d '/' -f3 | cut -d'@' -f1
+}
+
 jenkins() {
   local script
   if [ -z "$1" ]; then
@@ -63,7 +81,7 @@ jenkins() {
   else
     script="$1"
   fi
-  curl -sk --fail-with-body -L -H "$CRUMB" -X POST "$JENKINS_URL/scriptText" --user "$JENKINS_AUTH" -d "script=${script}"
+  curl -s -k --fail-with-body -L -H "$CRUMB" -X POST "$JENKINS_URL/scriptText" --user "$JENKINS_AUTH" --data-urlencode "script=${script}" | sed 's#\r##g'
 }
 
 kapi-resources() {
