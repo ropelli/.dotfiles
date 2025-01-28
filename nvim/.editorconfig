@@ -11,6 +11,14 @@ charset = utf-8
 indent_style = tab
 tab_width = 4
 
+[*.mk]
+indent_style = tab
+tab_width = 4
+
+[Makefile]
+indent_style = tab
+tab_width = 4
+
 [*.py]
 indent_size = 4
 
