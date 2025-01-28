@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -xe
+set -e
 
 # this script will add a layer to an existing docker image
 # image must be prepulled
@@ -17,8 +17,9 @@ set -xe
 
 # parse arguments
 should_create_tempfile=false
+pull=false
 
-while getopts ":a:c:r:e:w:" opt; do
+while getopts ":a:c:r:e:w:p" opt; do
     case ${opt} in
         a )
           command="ADD tempfile $OPTARG"
@@ -27,6 +28,9 @@ while getopts ":a:c:r:e:w:" opt; do
         r )
           command="RUN $OPTARG"
           ;;
+        p )
+          pull="true"
+          ;;
         e )
           command="ENV $OPTARG"
           ;;
@@ -34,7 +38,7 @@ while getopts ":a:c:r:e:w:" opt; do
           command="WORKDIR $OPTARG"
           ;;
         \? )
-          echo "Usage: add-docker-layer.sh -a|-c|-r|-e|-w <command> <image> [<tag>]"
+          echo "Usage: add-docker-layer.sh [-p] -a|-c|-r|-e|-w <command> <image> [<tag>]"
           exit 1
           ;;
     esac
@@ -44,8 +48,9 @@ shift $((OPTIND -1))
 image=$1
 tag=$2
 
-# check if image exists
-if ! docker inspect --type=image "$image" &> /dev/null; then
+if [ "$pull" = true ]; then
+    docker pull "$image"
+elif ! docker inspect --type=image "$image" &> /dev/null; then
     echo "Image $image not found, consider pulling it first" >&2
     exit 1
 fi
