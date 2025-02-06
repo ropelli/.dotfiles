@@ -79,7 +79,11 @@ jenkins() {
       script+="$script_line"$'\n'
     done
   else
-    script="$1"
+    if [ -f "$1" ]; then
+      script=$(cat "$1")
+    else
+      script="$1"
+    fi
   fi
   curl -s -k --fail-with-body -L -H "$CRUMB" -X POST "$JENKINS_URL/scriptText" --user "$JENKINS_AUTH" --data-urlencode "script=${script}" | sed 's#\r##g'
 }
@@ -288,3 +292,19 @@ nnncd() {
   }
 }
 
+docker-port-forward() {
+  if [[ -z $1 || -z $2 ]]; then
+    echo "Usage: docker-port-forward <container_name> <port>"
+    return 1
+  fi
+  local container_name port ip_address
+  container_name=$1
+  port=$2
+  ip_address=$(docker inspect "${container_name}" --format '{{.NetworkSettings.IPAddress}}')
+  if [[ -z $ip_address ]]; then
+    echo "Container ${container_name} not found" >&2
+    return 1
+  fi
+  new_container_name="${container_name}_port_forward_port_${port}"
+  docker run --name "${new_container_name}" --rm --net host alpine/socat TCP4-LISTEN:"${port}" "TCP4:${ip_address}:${port}"
+}
