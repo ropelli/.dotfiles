@@ -14,4 +14,4 @@ jobs:
       - uses: actions/checkout@v4
       - name: install
         run: |
-          ./install-in-container.sh ubuntu
+          ./container-install.sh ubuntu
