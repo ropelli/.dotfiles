@@ -1,0 +1,17 @@
+name: CI
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  install-test:
+    container:
+      image: ubuntu:22.04
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install
+        run: |
+          ./install-in-container.sh ubuntu
