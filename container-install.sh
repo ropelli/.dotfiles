@@ -3,7 +3,7 @@ set -e
 
 install_ubuntu() {
     apt update && apt install wget curl tar ripgrep fzf stow -y
-    git clone https://github.com/ropelli/.dotfiles ~/.dotfiles
+    cp -a . ~/.dotfiles
     rm -f ~/.bashrc ~/.profile
     cd ~/.dotfiles
     git submodule update --init --recursive
