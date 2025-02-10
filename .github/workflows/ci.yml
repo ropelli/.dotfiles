@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: workaround github actions nonsense
         run: |
-         	chown -R $(id -un):$(id -gn) .
+          chown -R $(id -un):$(id -gn) .
       - name: install
         run: |
           ./container-install.sh ubuntu
