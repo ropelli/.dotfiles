@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: install git
+        run: |
+          apt-get update
+          apt-get install git -y
+          rm -rf /var/lib/apt/lists/*
       - name: install
         run: |
           ./container-install.sh ubuntu
