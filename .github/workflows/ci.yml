@@ -11,12 +11,12 @@ jobs:
       image: ubuntu:22.04
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: install git
         run: |
           apt-get update
           apt-get install git -y
           rm -rf /var/lib/apt/lists/*
+      - uses: actions/checkout@v4
       - name: install
         run: |
           ./container-install.sh ubuntu
