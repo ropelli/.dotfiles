@@ -2,7 +2,7 @@
 set -e
 
 install_ubuntu() {
-    apt update && apt install wget curl tar ripgrep fzf stow -y
+    apt update && apt install wget curl tar ripgrep fzf stow tmux -y
     cp -a . ~/.dotfiles
     rm -f ~/.bashrc ~/.profile
     cd ~/.dotfiles
@@ -18,6 +18,25 @@ install_ubuntu() {
     ln -s ~/nvim/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 }
 
+install_fedora() {
+    dnf install wget curl tar rigpgrep fzf stow tmux -y
+    cp -a . ~/.dotfiles
+    rm -f ~/.bashrc ~/.profile
+    cd ~/.dotfiles
+    git submodule update --init --recursive
+    git submodule update --recursive --remote
+
+    cd ~
+    wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+    mkdir -p ~/nvim
+    cd ~/nvim
+    tar -xzf ~/nvim-linux-x86_64.tar.gz
+    ln -s ~/nvim/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+}
+
 if [[ "$1" == "ubuntu" ]]; then
     install_ubuntu
+fi
+if [[ "$2" == "fedora" ]]; then
+    install_fedora
 fi
