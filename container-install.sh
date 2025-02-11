@@ -36,7 +36,9 @@ install_fedora() {
 
 if [[ "$1" == "ubuntu" ]]; then
     install_ubuntu
-fi
-if [[ "$2" == "fedora" ]]; then
+elif [[ "$1" == "fedora" ]]; then
     install_fedora
+else
+    echo "Unsupported distro '$1'" >&2
+    exit 1
 fi
