@@ -7,8 +7,15 @@ on:
   workflow_dispatch:
 jobs:
   install-test:
+    strategy:
+      matrix:
+        os:
+        - image: ubuntu:22.04
+          command: ubuntu
+        - image: fedora:41
+          command: fedora
     container:
-      image: ubuntu:22.04
+      image: ${{matrix.os.image}}
     runs-on: ubuntu-latest
     steps:
       - name: install git
@@ -21,5 +28,7 @@ jobs:
         run: |
           chown -R $(id -un):$(id -gn) .
       - name: install
+        env:
+          command: ${{matrix.os.command}}
         run: |
-          ./container-install.sh ubuntu
+          ./container-install.sh "$command"
