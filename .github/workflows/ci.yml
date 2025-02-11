@@ -19,10 +19,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: install git
+        if: matrix.os.command == ubuntu
         run: |
           apt-get update
           apt-get install git -y
           rm -rf /var/lib/apt/lists/*
+      - name: install git
+        if: matrix.os.command == fedora
+        run: |
+          dnf install git -y
       - uses: actions/checkout@v4
       - name: workaround github actions nonsense
         run: |
