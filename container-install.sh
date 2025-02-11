@@ -19,7 +19,7 @@ install_ubuntu() {
 }
 
 install_fedora() {
-    dnf install wget curl tar rigpgrep fzf stow tmux -y
+    dnf install wget curl tar ripgrep fzf stow tmux -y
     cp -a . ~/.dotfiles
     rm -f ~/.bashrc ~/.profile
     cd ~/.dotfiles
