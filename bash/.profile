@@ -50,3 +50,6 @@ if [ -d "$HOME/.gem/bin" ]; then
   PATH="$HOME/.gem/bin:$PATH"
 fi
 
+if [ -d "/home/linuxbrew/.linuxbrew/opt/node@22/bin" ]; then
+  PATH="/home/linuxbrew/.linuxbrew/opt/node@22/bin:$PATH"
+fi

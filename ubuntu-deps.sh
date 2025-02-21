@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -40,7 +39,7 @@ install_go() {
 }
 
 install_git() {
-    sudo apt-get install -y git
+    sudo apt-get install -y git git-lfs
     go install github.com/jesseduffield/lazygit@latest
     lazygit --version
     wget https://github.com/nektos/act/releases/download/v0.2.71/act_Linux_x86_64.tar.gz -O /tmp/act.tar.gz
@@ -93,7 +92,7 @@ install_docker() {
     sudo docker run hello-world
 
     # Add user to docker group
-    sudo groupadd docker
+    sudo groupadd docker -f
     sudo usermod -aG docker "$USER"
     newgrp docker
     sudo chown "$USER":"$USER" /home/"$USER"/.docker -R
@@ -101,18 +100,49 @@ install_docker() {
     docker run hello-world
 }
 
+install_nodejs() {
+    brew install node@22
+    source ~/.profile
+    source ~/.bashrc
+    node -v
+    npm -v
+}
+
+install_wsl_tools() {
+    if ! [ -z $WSL_DISTRO_NAME ]; then
+        sudo apt-get update
+        sudo apt install wslu -y
+    fi
+}
+
+install_markup_tools() {
+    sudo apt update
+    sudo apt install -y yq jq
+    yq --version
+    jq --version
+}
+
 install_all() {
     sudo apt-get update
+    install_compilers
     install_homebrew
     install_fzf
     install_ripgrep
     install_fd
-    install_compilers
     install_tmux
     install_go
     install_git
     install_go_tools
     install_k8s_tools
     install_docker
+    install_podman
+    install_nodejs
+    install_wsl_tools
+    install_markup_tools
     install_subversion
 }
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    set -e
+    install_all
+fi
