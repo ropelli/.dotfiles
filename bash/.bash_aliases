@@ -28,7 +28,6 @@ pngpacktojpg() {
   convert -quality 75 -resize 80% $1 $(echo $1 | sed "s/.png/.jpg/g")
 }
 
-
 selector() {
   history_file=$1
   looking_for=$2
@@ -39,7 +38,7 @@ selector() {
     touch "$history_file"
   fi
   history=$(cat "$history_file")
-  selection=$(echo -e "new\n$history" | fzf --header "($history_file)" --prompt "Select $looking_for (new for other): ")
+  selection=$(echo -e "new\n$history" | fzf --header "($history_file)" --history "$history_file.hist" --prompt "Select $looking_for (new for other): ")
   return_code=$?
   if [ -z "$selection" ]; then
     echo 'No selection made'
