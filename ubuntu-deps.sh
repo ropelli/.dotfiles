@@ -17,9 +17,14 @@ install_tpm() {
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 }
 
+install_ruby() {
+    sudo apt-get install -y ruby-full
+}
+
 install_tmux() {
     sudo apt-get install -y tmux
     install_tpm
+    sudo gem install tmuxinator
 }
 
 install_fd() {
@@ -28,6 +33,10 @@ install_fd() {
 
 install_compilers() {
     sudo apt-get install -y build-essential
+}
+
+install_networking_tools() {
+    sudo apt-get install -y net-tools
 }
 
 install_go() {
@@ -125,10 +134,12 @@ install_markup_tools() {
 install_all() {
     sudo apt-get update
     install_compilers
+    install_networking_tools
     install_homebrew
     install_fzf
     install_ripgrep
     install_fd
+    install_ruby # needed for tmuxinator
     install_tmux
     install_go
     install_git
