@@ -2,7 +2,7 @@
 set -e
 
 install_ubuntu() {
-    apt update && apt install wget curl tar ripgrep fzf stow -y
+    sudo apt update && sudo apt install wget curl tar ripgrep fzf stow xclip -y
     git clone https://github.com/ropelli/.dotfiles ~/.dotfiles
     rm -f ~/.bashrc ~/.profile
     cd ~/.dotfiles
@@ -15,7 +15,7 @@ install_ubuntu() {
     mkdir -p ~/nvim
     cd ~/nvim
     tar -xzf ~/nvim-linux-x86_64.tar.gz
-    ln -s ~/nvim/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+    sudo ln -s ~/nvim/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 }
 
 if [[ "$1" == "ubuntu" ]]; then
