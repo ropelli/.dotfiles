@@ -10,9 +10,9 @@ jobs:
     strategy:
       matrix:
         os:
-        - image: ubuntu:22.04
+        - image: ubuntu:24.04
           command: ubuntu
-        - image: fedora:41
+        - image: fedora:42
           command: fedora
     container:
       image: ${{matrix.os.image}}
