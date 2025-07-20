@@ -2,9 +2,9 @@
 
 dnf_or_apt() {
     if [ $OUR_DISTRO = fedora ]; then
-        dnf "$@"
+        sudo dnf "$@"
     elif [ $OUR_DISTRO = debian ]; then
-        apt-get "$@"
+        sudo apt-get "$@"
     fi
 }
 
@@ -26,25 +26,32 @@ install_tpm() {
 }
 
 install_ruby() {
-    sudo apt-get install -y ruby-full
+    dnf_or_apt install -y ruby-full
 }
 
 install_tmux() {
-    sudo apt-get install -y tmux
+    dnf_or_apt install -y tmux
     install_tpm
     sudo gem install tmuxinator
 }
 
 install_fd() {
-    sudo apt-get install -y fd-find
+    dnf_or_apt install -y fd-find
 }
 
 install_compilers() {
-    sudo apt-get install -y build-essential
+    if [ $OUR_DISTRO = fedora ]; then
+        sudo dnf install make automake gcc gcc-c++ kernel-devel
+    elif [ $OUR_DISTRO = debian ]; then
+        sudo apt-get install -y build-essential
+    else
+        echo "Unsupported DISTRO" >&2
+        return 1
+    fi
 }
 
 install_networking_tools() {
-    sudo apt-get install -y net-tools
+    dnf_or_apt install -y net-tools
 }
 
 install_go() {
@@ -56,7 +63,7 @@ install_go() {
 }
 
 install_git() {
-    sudo apt-get install -y git git-lfs
+    dnf_or_apt install -y git git-lfs
     go install github.com/jesseduffield/lazygit@latest
     lazygit --version
     wget https://github.com/nektos/act/releases/download/v0.2.71/act_Linux_x86_64.tar.gz -O /tmp/act.tar.gz
@@ -65,7 +72,7 @@ install_git() {
 }
 
 install_subversion() {
-    sudo apt-get install -y subversion
+    dnf_or_apt install -y subversion
     go install github.com/YoshihideShirai/tuisvn@latest
 }
 
@@ -75,7 +82,7 @@ install_go_tools() {
 }
 
 install_podman() {
-    sudo apt-get -y install podman -y
+    dnf_or_apt -y install podman -y
     podman version
 }
 
@@ -127,20 +134,20 @@ install_nodejs() {
 
 install_wsl_tools() {
     if ! [ -z $WSL_DISTRO_NAME ]; then
-        sudo apt-get update
+        dnf_or_apt update
         sudo apt install wslu -y
     fi
 }
 
 install_markup_tools() {
-    sudo apt update
-    sudo apt install -y yq jq
+    dnf_or_apt update
+    dnf_or_apt install -y yq jq
     yq --version
     jq --version
 }
 
 install_all() {
-    sudo apt-get update
+    dnf_or_apt update
     install_compilers
     install_networking_tools
     install_homebrew
