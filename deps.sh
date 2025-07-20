@@ -182,7 +182,7 @@ export OUR_DISTRO
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     set -e
-    if [ $OUR_DISTRO = unspported ]; then
+    if [ $OUR_DISTRO = unsupported ]; then
         exit 1
     fi
     install_all
