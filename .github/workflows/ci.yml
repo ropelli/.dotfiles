@@ -36,4 +36,4 @@ jobs:
         env:
           command: ${{matrix.os.command}}
         run: |
-          ./test-install.sh "$command"
+          ./test-deps.sh "$command"
