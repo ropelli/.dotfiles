@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  install-test:
+    strategy:
+      matrix:
+        os:
+        - image: ubuntu:22.04
+          command: ubuntu
+        - image: fedora:41
+          command: fedora
+    container:
+      image: ${{matrix.os.image}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: install git
+        if: matrix.os.command == 'ubuntu'
+        run: |
+          apt-get update
+          apt-get install git -y
+          rm -rf /var/lib/apt/lists/*
+      - name: install git
+        if: matrix.os.command == 'fedora'
+        run: |
+          dnf install git -y
+      - uses: actions/checkout@v4
+      - name: workaround github actions nonsense
+        run: |
+          chown -R $(id -un):$(id -gn) .
+      - name: install
+        env:
+          command: ${{matrix.os.command}}
+        run: |
+          ./container-install.sh "$command"
