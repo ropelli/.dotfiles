@@ -171,7 +171,7 @@ install_all() {
 
 if which dnf >/dev/null 2>&1; then
     OUR_DISTRO=fedora
-elif which apt-get >/dev/ull 2>&1; then
+elif which apt-get >/dev/null 2>&1; then
     OUR_DISTRO=debian
 else
     OUR_DISTRO=unsupported
