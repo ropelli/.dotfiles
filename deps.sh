@@ -1,5 +1,13 @@
 #!/bin/bash
 
+dnf_or_apt() {
+    if [ $OUR_DISTRO = fedora ]; then
+        dnf "$@"
+    elif [ $OUR_DISTRO = debian ]; then
+        apt-get "$@"
+    fi
+}
+
 install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 }
@@ -153,7 +161,22 @@ install_all() {
     install_subversion
 }
 
+
+if which dnf >/dev/null 2>&1; then
+    OUR_DISTRO=fedora
+elif which apt-get >/dev/ull 2>&1; then
+    OUR_DISTRO=debian
+else
+    OUR_DISTRO=unsupported
+    echo "Unsupported DISTRO!" >&2
+fi
+export OUR_DISTRO
+
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     set -e
+    if [ $OUR_DISTRO = unspported ]; then
+        exit 1
+    fi
     install_all
 fi
