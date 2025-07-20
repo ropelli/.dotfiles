@@ -28,7 +28,6 @@ pngpacktojpg() {
   convert -quality 75 -resize 80% $1 $(echo $1 | sed "s/.png/.jpg/g")
 }
 
-
 selector() {
   history_file=$1
   looking_for=$2
@@ -39,7 +38,7 @@ selector() {
     touch "$history_file"
   fi
   history=$(cat "$history_file")
-  selection=$(echo -e "new\n$history" | fzf --header "($history_file)" --prompt "Select $looking_for (new for other): ")
+  selection=$(echo -e "new\n$history" | fzf --header "($history_file)" --history "$history_file.hist" --prompt "Select $looking_for (new for other): ")
   return_code=$?
   if [ -z "$selection" ]; then
     echo 'No selection made'
@@ -68,7 +67,32 @@ jenkins-auth() {
 }
 
 auth() {
-  full=$(selector "$1")
+  local auth_file=$1
+  local grep_pattern=$2
+  if [ -z "$auth_file" ] || [ "$auth_file" == "--help" ] || [ "$auth_file" == "-h" ]; then
+    echo "Usage: auth <auth_file> [grep_pattern]" >&2
+    return 1
+  fi
+  if [ ! -f "$auth_file" ]; then
+    echo "auth: Auth file $auth_file does not exist." >&2
+    return 1
+  fi
+  if [ -n "$grep_pattern" ]; then
+    full=$(grep "$grep_pattern" "$auth_file")
+    if [ -z "$full" ]; then
+      echo "auth: No match found for pattern '$grep_pattern' in $auth_file." >&2
+      return 1
+    elif [ $(echo "$full" | wc -l) -gt 1 ]; then
+      echo "auth: Multiple matches found for pattern '$grep_pattern' in $auth_file." >&2
+      return 1
+    fi
+  else
+    full=$(selector "$auth_file")
+    if [ -z "$full" ]; then
+      echo "auth: No selection made." >&2
+      return 1
+    fi
+  fi
   echo "$full" | cut -d '/' -f3 | cut -d'@' -f1
 }
 

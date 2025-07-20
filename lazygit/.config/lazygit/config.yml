@@ -1,3 +1,10 @@
+gui:
+  theme:
+    activeBorderColor:
+      - "#00bb00"
+      - bold
+    selectedLineBgColor:
+      - "#0000ee"
 customCommands:
   - key: "W"
     command: git commit --no-verify

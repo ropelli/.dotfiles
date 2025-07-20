@@ -151,3 +151,7 @@ fi
 if [ -f "$HOME/.bashrc_work" ]; then
   . "$HOME/.bashrc_work"
 fi
+
+if which fzf >/dev/null; then
+  eval "$(fzf --tmux --bash)"
+fi
