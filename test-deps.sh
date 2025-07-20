@@ -2,7 +2,7 @@
 set -e
 
 install_ubuntu() {
-    apt update && apt install wget curl tar ripgrep fzf stow xclip tmux -y
+    apt update && apt install sudo wget curl tar ripgrep fzf stow xclip tmux -y
     cp -a . ~/.dotfiles
     rm -f ~/.bashrc ~/.profile
     cd ~/.dotfiles
@@ -19,7 +19,7 @@ install_ubuntu() {
 }
 
 install_fedora() {
-    dnf install wget curl tar ripgrep fzf stow tmux -y
+    dnf install sudo wget curl tar ripgrep fzf stow tmux -y
 
     adduser testuser
     usermod -aG wheel testuser
