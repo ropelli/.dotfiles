@@ -20,18 +20,16 @@ install_ubuntu() {
 
 install_fedora() {
     dnf install wget curl tar ripgrep fzf stow tmux -y
-    cp -a . ~/.dotfiles
-    rm -f ~/.bashrc ~/.profile
-    cd ~/.dotfiles
+
+    adduser testuser
+    usermod -aG wheel testuser
+    
+    cp -a . /home/testuser/.dotfiles
+    cd /home/testuser/.dotfiles
     git submodule update --init --recursive
     git submodule update --recursive --remote
-
-    cd ~
-    wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-    mkdir -p ~/nvim
-    cd ~/nvim
-    tar -xzf ~/nvim-linux-x86_64.tar.gz
-    ln -s ~/nvim/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+    chown -R testuser:testuser /home/testuser/.dotfiles
+    su testuser -c "bash -c 'cd /home/testuser/.dotfiles && ./deps.sh'"
 }
 
 if [[ "$1" == "ubuntu" ]]; then
