@@ -169,6 +169,8 @@ install_all() {
 }
 
 
+set -x
+
 if which dnf >/dev/null 2>&1; then
     OUR_DISTRO=fedora
 elif which apt-get >/dev/null 2>&1; then
@@ -181,7 +183,7 @@ export OUR_DISTRO
 
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    set -ex
+    set -e
     if [ $OUR_DISTRO = unsupported ]; then
         exit 1
     fi
