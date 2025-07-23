@@ -171,7 +171,7 @@ install_all() {
 
 set -x
 
-if which dnf >/dev/null 2>&1; then
+if which dnf; then
     OUR_DISTRO=fedora
 elif which apt-get >/dev/null 2>&1; then
     OUR_DISTRO=debian
