@@ -23,6 +23,7 @@ install_fedora() {
 
     adduser testuser
     usermod -aG wheel testuser
+    echo 'testuser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
     
     cp -a . /home/testuser/.dotfiles
     cd /home/testuser/.dotfiles
