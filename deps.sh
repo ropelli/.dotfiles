@@ -1,9 +1,9 @@
 #!/bin/bash
 
 dnf_or_apt() {
-    if [ $OUR_DISTRO = fedora ]; then
+    if [ $PKG_MNGR = dnf ]; then
         sudo dnf "$@"
-    elif [ $OUR_DISTRO = debian ]; then
+    elif [ $PKG_MNGR = apt-get ]; then
         sudo apt-get "$@"
     fi
 }
@@ -40,9 +40,9 @@ install_fd() {
 }
 
 install_compilers() {
-    if [ $OUR_DISTRO = fedora ]; then
+    if [ $PKG_MNGR = dnf ]; then
         sudo dnf install make automake gcc gcc-c++ kernel-devel
-    elif [ $OUR_DISTRO = debian ]; then
+    elif [ $PKG_MNGR = apt-get ]; then
         sudo apt-get install -y build-essential
     else
         echo "Unsupported DISTRO" >&2
@@ -171,12 +171,12 @@ install_all() {
 
 set -x
 
-if which dnf; then
-    OUR_DISTRO=fedora
-elif which apt-get >/dev/null 2>&1; then
-    OUR_DISTRO=debian
+if command -v dnf >/dev/null; then
+    PKG_MNGR=dnf
+elif command -v apt-get >/dev/null; then
+    PKG_MNGR=apt-get
 else
-    OUR_DISTRO=unsupported
+    PKG_MNGR=unsupported
     echo "Unsupported DISTRO!" >&2
 fi
 export OUR_DISTRO
@@ -184,7 +184,7 @@ export OUR_DISTRO
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     set -e
-    if [ $OUR_DISTRO = unsupported ]; then
+    if [ $PKG_MNGR = unsupported ]; then
         exit 1
     fi
     install_all
