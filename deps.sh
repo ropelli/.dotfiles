@@ -5,13 +5,21 @@ dnf_or_apt() {
         sudo dnf "$@"
     elif [ $PKG_MNGR = apt-get ]; then
         sudo apt-get "$@"
+    else
+        echo "Unsupported package manager" >&2
+        return 1
     fi
+}
+
+setup_local_bin() {
+    mkdir $HOME/.local/bin
+    export PATH="$HOME/.local/bin:$PATH"
 }
 
 install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/708c94ee69fafa67c1e475783d3ed36706062743/install.sh)"
-    echo >> /home/testuser/.bashrc
-    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/testuser/.bashrc
+    echo >> "$HOME/.bashrc"
+    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "$HOME/.bashrc"
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 }
 
@@ -107,31 +115,41 @@ install_k8s_tools() {
 }
 
 install_docker() {
-    # Add Docker's official GPG key:
-    sudo apt-get update
-    sudo apt-get install ca-certificates curl
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-    # Add the repository to Apt sources:
-    echo \
-        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-        $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    sudo apt-get update
-
-    # Install latest
-    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-    sudo docker run hello-world
-
+    if [ $PKG_MNGR = dnf ]; then
+        sudo dnf install -y dnf-plugins-core
+        sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+        sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        sudo systemctl enable --now docker
+        sudo docker run --rm hello-world
+    elif [ $PKG_MNGR = apt-get ]; then
+        # Add Docker's official GPG key:
+        sudo apt-get update
+        sudo apt-get install ca-certificates curl
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+    
+        # Add the repository to Apt sources:
+        echo \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update
+    
+        # Install latest
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+        sudo docker run --rm hello-world
+    else
+        echo "Unsupported package manager" >&2
+        return 1
+    fi
     # Add user to docker group
     sudo groupadd docker -f
     sudo usermod -aG docker "$USER"
     newgrp docker
-    sudo chown "$USER":"$USER" /home/"$USER"/.docker -R
+    sudo chown "$USER":"$USER" "$HOME"/.docker -R
     sudo chmod g+rwx "$HOME/.docker" -R
-    docker run hello-world
+    docker run --rm hello-world
 }
 
 install_nodejs() {
@@ -159,6 +177,7 @@ install_markup_tools() {
 install_all() {
     dnf_or_apt update
     install_compilers
+    setup_local_bin
     install_networking_tools
     install_homebrew
     install_fzf
@@ -177,7 +196,6 @@ install_all() {
     install_markup_tools
     install_subversion
 }
-
 
 set -x
 
