@@ -9,7 +9,10 @@ dnf_or_apt() {
 }
 
 install_homebrew() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/708c94ee69fafa67c1e475783d3ed36706062743/install.sh)"
+    echo >> /home/testuser/.bashrc
+    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/testuser/.bashrc
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 }
 
 install_fzf() {
@@ -66,7 +69,7 @@ install_git() {
     dnf_or_apt install -y git git-lfs
     go install github.com/jesseduffield/lazygit@latest
     lazygit --version
-    wget https://github.com/nektos/act/releases/download/v0.2.71/act_Linux_x86_64.tar.gz -O /tmp/act.tar.gz
+    wget https://github.com/nektos/act/releases/download/v0.2.79/act_Linux_x86_64.tar.gz -O /tmp/act.tar.gz
     tar -C ~/.local/bin -xzf /tmp/act.tar.gz
     act --version
 }
@@ -89,9 +92,9 @@ install_podman() {
 install_k8s_tools() {
     go install sigs.k8s.io/kind@v0.26.0
     kind version
-    go install github.com/derailed/k9s@v0.32.7
+    go install github.com/derailed/k9s@v0.50.9
     k9s version
-    wget https://github.com/helmfile/helmfile/releases/download/v1.0.0-rc.8/helmfile_1.0.0-rc.8_linux_amd64.tar.gz -O /tmp/helmfile.tar.gz
+    wget https://github.com/helmfile/helmfile/releases/download/v1.1.3/helmfile_1.1.3_linux_amd64.tar.gz -O /tmp/helmfile.tar.gz
     tar -C ~/.local/bin -xzf /tmp/helmfile.tar.gz
     helmfile version
 }
