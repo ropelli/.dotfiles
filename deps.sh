@@ -41,11 +41,11 @@ install_fd() {
 
 install_compilers() {
     if [ $PKG_MNGR = dnf ]; then
-        sudo dnf install make automake gcc gcc-c++ kernel-devel
+        sudo dnf -y install make automake gcc gcc-c++ kernel-devel
     elif [ $PKG_MNGR = apt-get ]; then
         sudo apt-get install -y build-essential
     else
-        echo "Unsupported DISTRO" >&2
+        echo "Unsupported package manager" >&2
         return 1
     fi
 }
@@ -177,7 +177,7 @@ elif command -v apt-get >/dev/null; then
     PKG_MNGR=apt-get
 else
     PKG_MNGR=unsupported
-    echo "Unsupported DISTRO!" >&2
+    echo "Unsupported package manager" >&2
 fi
 export OUR_DISTRO
 
