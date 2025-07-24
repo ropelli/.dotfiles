@@ -190,7 +190,7 @@ install_all() {
     install_git
     install_go_tools
     install_k8s_tools
-    if ! "$1" = "container"; then
+    if ps aux | grep systemd | grep -v grep; then
         install_docker
     fi
     install_podman
@@ -218,5 +218,5 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     if [ $PKG_MNGR = unsupported ]; then
         exit 1
     fi
-    install_all "$@"
+    install_all
 fi
