@@ -12,7 +12,7 @@ dnf_or_apt() {
 }
 
 setup_local_bin() {
-    mkdir $HOME/.local/bin
+    mkdir -p $HOME/.local/bin
     export PATH="$HOME/.local/bin:$PATH"
 }
 
