@@ -29,7 +29,14 @@ install_tpm() {
 }
 
 install_ruby() {
-    dnf_or_apt install -y ruby-full
+    if [ $PKG_MNGR = dnf ]; then
+        dnf_or_apt install -y ruby
+    elif [ $PKG_MNGR = apt-get ]; then
+        dnf_or_apt install -y ruby-full
+    else
+        echo "Unsupported package manager" >&2
+        return 1
+    fi
 }
 
 install_tmux() {
@@ -44,9 +51,9 @@ install_fd() {
 
 install_compilers() {
     if [ $PKG_MNGR = dnf ]; then
-        sudo dnf -y install make automake gcc gcc-c++ kernel-devel
+        dnf_or_apt install -y make automake gcc gcc-c++ kernel-devel
     elif [ $PKG_MNGR = apt-get ]; then
-        sudo apt-get install -y build-essential
+        dnf_or_apt install -y build-essential
     else
         echo "Unsupported package manager" >&2
         return 1
