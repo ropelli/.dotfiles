@@ -115,6 +115,7 @@ install_k8s_tools() {
 }
 
 install_docker() {
+
     if [ $PKG_MNGR = dnf ]; then
         sudo dnf install -y dnf-plugins-core
         sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
@@ -189,7 +190,9 @@ install_all() {
     install_git
     install_go_tools
     install_k8s_tools
-    install_docker
+    if ! "$1" = "container"; then
+        install_docker
+    fi
     install_podman
     install_nodejs
     install_wsl_tools
@@ -215,5 +218,5 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     if [ $PKG_MNGR = unsupported ]; then
         exit 1
     fi
-    install_all
+    install_all "$@"
 fi
