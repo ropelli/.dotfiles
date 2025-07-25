@@ -164,13 +164,11 @@ install_nodejs() {
 
 install_wsl_tools() {
     if ! [ -z $WSL_DISTRO_NAME ]; then
-        dnf_or_apt update
         sudo apt install wslu -y
     fi
 }
 
 install_markup_tools() {
-    dnf_or_apt update
     dnf_or_apt install -y yq jq
     yq --version
     jq --version
