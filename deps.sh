@@ -101,7 +101,8 @@ install_go_tools() {
 
 install_podman() {
     dnf_or_apt -y install podman -y
-    podman version
+    # TODO: check installation is fine even in container
+    # podman version
 }
 
 install_k8s_tools() {
