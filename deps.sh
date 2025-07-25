@@ -11,6 +11,8 @@ dnf_or_apt() {
     fi
 }
 
+
+
 setup_local_bin() {
     mkdir -p $HOME/.local/bin
     export PATH="$HOME/.local/bin:$PATH"
@@ -175,7 +177,9 @@ install_markup_tools() {
 }
 
 install_all() {
-    dnf_or_apt update
+    if [ "$PKG_MNGR" = apt-get ]; then
+        sudo apt-get update
+    fi
     install_compilers
     setup_local_bin
     install_networking_tools
