@@ -158,8 +158,7 @@ install_docker() {
 
 install_nodejs() {
     brew install node@22
-    source ~/.profile
-    source ~/.bashrc
+    export PATH="/home/linuxbrew/.linuxbrew/opt/node@22/bin:$PATH"
     node -v
     npm -v
 }
