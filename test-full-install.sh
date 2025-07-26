@@ -19,7 +19,7 @@ install_ubuntu() {
 }
 
 install_fedora() {
-    dnf install sudo wget curl tar ripgrep fzf stow tmux -y
+    dnf install sudo wget curl -y
 
     adduser testuser
     usermod -aG wheel testuser
@@ -30,7 +30,7 @@ install_fedora() {
     git submodule update --init --recursive
     git submodule update --recursive --remote
     chown -R testuser:testuser /home/testuser/.dotfiles
-    su testuser -c "bash -c 'cd /home/testuser/.dotfiles && ./deps.sh container'"
+    su testuser -c "bash -c 'cd /home/testuser/.dotfiles && ./full-install.sh'"
 }
 
 if [[ "$1" == "ubuntu" ]]; then

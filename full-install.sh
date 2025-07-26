@@ -11,8 +11,6 @@ dnf_or_apt() {
     fi
 }
 
-
-
 setup_local_bin() {
     mkdir -p $HOME/.local/bin
     export PATH="$HOME/.local/bin:$PATH"
@@ -175,13 +173,31 @@ install_markup_tools() {
     jq --version
 }
 
+install_nvim() {
+    rm -fr "$HOME/.local/share/nvim"
+    cd "$HOME"
+    wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+    mkdir -p "$HOME/nvim"
+    cd "$HOME/nvim"
+    tar -xzf "$HOME/nvim-linux-x86_64.tar.gz"
+    rm -f "$HOME/nvim-linux-x86_64.tar.gz"
+    sudo ln -s "$HOME/nvim/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim"
+}
+
+install_basics() {
+    dnf_or_apt install sudo wget curl wl-cliboard tar ripgrep fzf stow tmux -y
+}
+
 install_all() {
     if [ "$PKG_MNGR" = apt-get ]; then
         sudo apt-get update
     fi
+    install_basics
+    ./install
     install_compilers
     setup_local_bin
     install_networking_tools
+    install_nvim
     install_homebrew
     install_fzf
     install_ripgrep
