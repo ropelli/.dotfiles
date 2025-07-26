@@ -193,7 +193,7 @@ install_all() {
         sudo apt-get update
     fi
     install_basics
-    ./install
+    ./install "$@"
     install_compilers
     setup_local_bin
     install_networking_tools
