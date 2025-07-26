@@ -185,7 +185,7 @@ install_nvim() {
 }
 
 install_basics() {
-    dnf_or_apt install sudo wget curl wl-cliboard tar ripgrep fzf stow tmux -y
+    dnf_or_apt install sudo wget curl wl-clipboard tar ripgrep fzf stow tmux -y
 }
 
 install_all() {
