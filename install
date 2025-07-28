@@ -2,8 +2,11 @@
 set -e
 
 dry=""
+extra_parameters=""
 if [ "$1" = "dry" ]; then
   dry="echo"
+elif [ "$1" = "--adopt" ]; then
+  extra_parameters="--adopt"
 fi
 
 ${dry} mkdir -p ~/.config
@@ -16,5 +19,5 @@ for dir in $dirs; do
     find . -mindepth 1 -type d | sed 's/^\.\///g' | xargs -i ${dry} mkdir -p ~/{}
     popd > /dev/null
   fi
-  ${dry} stow "$dir"
+  ${dry} stow "$dir" $extra_parameters
 done
