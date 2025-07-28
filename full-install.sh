@@ -18,8 +18,6 @@ setup_local_bin() {
 
 install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/708c94ee69fafa67c1e475783d3ed36706062743/install.sh)"
-    echo >> "$HOME/.bashrc"
-    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "$HOME/.bashrc"
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 }
 
