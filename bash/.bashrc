@@ -134,7 +134,7 @@ if [ -f "$HOME/.cargo/env" ]; then
   . "$HOME/.cargo/env"
 fi
 
-if which rbenv >/dev/null; then
+if command -v rbenv >/dev/null; then
   eval "$(rbenv init -)"
 fi
 
