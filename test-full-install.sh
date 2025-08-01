@@ -30,7 +30,7 @@ install_fedora() {
     git submodule update --init --recursive
     git submodule update --recursive --remote
     chown -R testuser:testuser /home/testuser/.dotfiles
-    su testuser -c "bash -c 'cd /home/testuser/.dotfiles && rm -f ~/.profile ~/.bashrc ~/.bash_aliases && ./full-install.sh'"
+    su testuser -c "bash -c 'cd /home/testuser/.dotfiles && rm -f ~/.profile ~/.bashrc ~/.bash_profile ~/.bash_aliases && ./full-install.sh'"
 }
 
 if [[ "$1" == "ubuntu" ]]; then
