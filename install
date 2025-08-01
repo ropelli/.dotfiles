@@ -11,7 +11,7 @@ fi
 
 ${dry} mkdir -p ~/.config
 
-dirs="$(find . -maxdepth 1 -mindepth 1 -type d | grep -v '^./.git$' | sed 's/^\.\///g')"
+dirs="$(find . -maxdepth 1 -mindepth 1 -type d | grep -v '^./\..*$' | sed 's/^\.\///g')"
 
 for dir in $dirs; do
   if [ -f "$dir/.mkdirs" ]; then
