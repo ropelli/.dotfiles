@@ -179,7 +179,7 @@ install_nvim() {
     cd "$HOME/nvim"
     tar -xzf "$HOME/nvim-linux-x86_64.tar.gz"
     rm -f "$HOME/nvim-linux-x86_64.tar.gz"
-    sudo ln -s "$HOME/nvim/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim"
+    sudo ln -s "$HOME/nvim/nvim-linux-x86_64/bin/nvim" "/usr/local/bin/nvim"
 }
 
 install_basics() {
