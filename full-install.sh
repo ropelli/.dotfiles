@@ -75,7 +75,7 @@ install_go() {
     wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -O /tmp/go.tar.gz
     sudo tar -C /usr/local -xzf /tmp/go.tar.gz
     export PATH="$HOME/go/bin:/usr/local/go/bin:$PATH"
-    go install -v golang.org/x/tools/gopls@latest.
+    go install -v golang.org/x/tools/gopls@latest
     go version
 }
 
