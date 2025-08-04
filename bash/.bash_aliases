@@ -28,33 +28,6 @@ pngpacktojpg() {
   convert -quality 75 -resize 80% $1 $(echo $1 | sed "s/.png/.jpg/g")
 }
 
-selector() {
-  history_file=$1
-  looking_for=$2
-  if [ -z "$looking_for" ]; then
-    looking_for=$(basename "$history_file" | sed 's#s$##g')
-  fi
-  if [ ! -f "$history_file" ]; then
-    touch "$history_file"
-  fi
-  history=$(cat "$history_file")
-  selection=$(echo -e "new\n$history" | fzf --header "($history_file)" --history "$history_file.hist" --prompt "Select $looking_for (new for other): ")
-  return_code=$?
-  if [ -z "$selection" ]; then
-    echo 'No selection made'
-    return $return_code
-  fi
-  if [ "$selection" == "new" ]; then
-    read -r -p "Enter a new item: " selection
-    return_code=$?
-    if [ -z "$selection" ]; then
-      return $return_code
-    fi
-    echo "$selection" >> "$history_file"
-  fi
-  echo "$selection"
-}
-
 jenkins-auth() {
   export full_jenkins_url
   if ! full_jenkins_url=$(selector ~/.jenkins-auth) ; then
