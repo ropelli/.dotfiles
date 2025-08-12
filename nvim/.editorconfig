@@ -42,3 +42,7 @@ indent_size = 4
 
 [*.md]
 indent_size = 4
+
+[*.gd]
+indent_style = tab
+tab_width = 4
