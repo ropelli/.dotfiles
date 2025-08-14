@@ -39,36 +39,6 @@ jenkins-auth() {
   JENKINS_AUTH=$(echo "$full_jenkins_url" | cut -d '/' -f3 | cut -d'@' -f1)
 }
 
-auth() {
-  local auth_file=$1
-  local grep_pattern=$2
-  if [ -z "$auth_file" ] || [ "$auth_file" == "--help" ] || [ "$auth_file" == "-h" ]; then
-    echo "Usage: auth <auth_file> [grep_pattern]" >&2
-    return 1
-  fi
-  if [ ! -f "$auth_file" ]; then
-    echo "auth: Auth file $auth_file does not exist." >&2
-    return 1
-  fi
-  if [ -n "$grep_pattern" ]; then
-    full=$(grep "$grep_pattern" "$auth_file")
-    if [ -z "$full" ]; then
-      echo "auth: No match found for pattern '$grep_pattern' in $auth_file." >&2
-      return 1
-    elif [ $(echo "$full" | wc -l) -gt 1 ]; then
-      echo "auth: Multiple matches found for pattern '$grep_pattern' in $auth_file." >&2
-      return 1
-    fi
-  else
-    full=$(selector "$auth_file")
-    if [ -z "$full" ]; then
-      echo "auth: No selection made." >&2
-      return 1
-    fi
-  fi
-  echo "$full" | cut -d '/' -f3 | cut -d'@' -f1
-}
-
 jenkins() {
   local script
   if [ -z "$1" ]; then
