@@ -12,4 +12,5 @@ sudo systemctl enable nvidia-{suspend,resume,hibernate}
 sudo dnf install kmodtool akmods mokutil openssl
 sudo kmodgenca -a --force
 sudo mokutil --import /etc/pki/akmods/certs/public_key.der
-sudo systemctl reboot
+echo 'ready to reboot'
+# sudo systemctl reboot
