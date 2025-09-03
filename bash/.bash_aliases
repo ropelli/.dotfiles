@@ -65,7 +65,7 @@ c9s() {
 
 devup() {
   load-secrets
-  ARTIFACTORY_USER=$(whoami) devcontainer up --workspace-folder "$1" $2 $3 $4 $5 $6 $7 $8 $9
+  devcontainer up --workspace-folder "$1" $2 $3 $4 $5 $6 $7 $8 $9
 }
 
 actmyworkflow() {
