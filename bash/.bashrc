@@ -127,6 +127,7 @@ fi
 
 export EDITOR='nvim'
 export VISUAL='nvim'
+export SUDO_EDITOR=$(which nvim)
 export BROWSER=wslview
 
 export SCREENDIR=$HOME/.screen
