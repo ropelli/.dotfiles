@@ -275,3 +275,13 @@ docker-port-forward() {
   new_container_name="${container_name}_port_forward_port_${port}"
   docker run --name "${new_container_name}" --rm --net host alpine/socat TCP4-LISTEN:"${port}" "TCP4:${ip_address}:${port}"
 }
+
+fix-wsl-wayland() {
+  if [ -n "${WAYLAND_DISPLAY}" ] &&
+    [ ! -h "/run/user/${UID}/${WAYLAND_DISPLAY}" ]
+  then
+    sudo mkdir -p "/run/user/${UID}/"
+    sudo chown -R "${UID}":"${UID}" "/run/user/${UID}/"
+    sudo ln -sf "/mnt/wslg/runtime-dir/${WAYLAND_DISPLAY}" "/run/user/${UID}/"
+  fi
+}
