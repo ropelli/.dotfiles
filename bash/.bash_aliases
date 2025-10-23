@@ -16,6 +16,7 @@ alias pods='kubectl get pods'
 
 alias watch='watch -n 1 '
 alias every='xargs -i '
+alias lastword='awk "{print \$NF}"'
 alias millis='date +%s%N | cut -b1-13'
 
 packpngstojpg() {
