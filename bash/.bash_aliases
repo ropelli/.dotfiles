@@ -197,7 +197,7 @@ tms-gen-dev() {
     if [ -d "$link" ]; then
       cat <<EOF > ~/.config/tmuxinator/"$session_name".yml
 name: $session_name
-root: ~/dev-sessions/$session_name
+root: $(readlink "$HOME/dev-sessions/$session_name")
 attach: false
 windows:
 - $session_name:
