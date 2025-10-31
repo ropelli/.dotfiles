@@ -191,46 +191,6 @@ dudir() {
   for i in $(ls -a $1); do du -hs $i; done | sort -h
 }
 
-tms-gen-dev() {
-  for link in ~/dev-sessions/*; do
-    session_name=$(basename "$link")
-    if [ -d "$link" ]; then
-      cat <<EOF > ~/.config/tmuxinator/"$session_name".yml
-name: $session_name
-root: $(readlink "$HOME/dev-sessions/$session_name")
-attach: false
-windows:
-- $session_name:
-    layout: tiled
-    panes:
-    - nvim
-    -
-EOF
-    fi
-  done
-}
-
-tms-start() {
-  local yamls
-  yamls=$(find ~/.config/tmuxinator -name '*.yaml' ! -name '*-disabled.yaml')
-  for yaml in ${yamls}; do
-    cp "$yaml" "${yaml//.yaml/.yml}"
-  done
-  local sessions
-  sessions="$(tmuxinator list | tail -n 1)"
-  for session in ${sessions}; do
-    tmuxinator start "$session"
-  done
-}
-
-tms-stop() {
-  local sessions
-  sessions="$(tmuxinator list | tail -n 1)"
-  for session in ${sessions}; do
-    tmuxinator stop "$session"
-  done
-}
-
 ghauth() {
   export GITHUB_TOKEN
   GITHUB_TOKEN=$(grep "$1" ~/.git-credentials | cut -d':' -f3 | cut -d'@' -f1)

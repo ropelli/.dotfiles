@@ -1,0 +1,101 @@
+#!/usr/bin/bash
+set -e
+
+gen-dev() {
+  for link in ~/dev-sessions/*; do
+    session_name=$(basename "$link")
+    if [ -d "$link" ]; then
+      cat <<EOF > ~/.config/tmuxinator/"$session_name".yml
+# tms generated tmuxinator config for $session_name
+name: $session_name
+root: $(readlink "$HOME/dev-sessions/$session_name")
+attach: false
+windows:
+- $session_name:
+    layout: tiled
+    panes:
+    - nvim
+    -
+EOF
+    fi
+  done
+  # remove yamls for deleted sessions
+  find "$HOME/.config/tmuxinator" -name '*.yml' -print0 | while IFS= read -r -d '' yaml; do
+    session_name=$(basename "$yaml" .yml)
+    if [ ! -L ~/dev-sessions/"$session_name" ] && grep -q '# tms generated tmuxinator config for' "$yaml"; then
+      echo "Removing tmuxinator config for deleted session: $session_name" 2>&1
+      rm "$yaml" || echo "Failed to remove $yaml" 2>&1
+    fi
+  done
+}
+
+start() {
+  local yamls
+  yamls=$(find ~/.config/tmuxinator -name '*.yaml' ! -name '*-disabled.yaml')
+  for yaml in ${yamls}; do
+    cp "$yaml" "${yaml//.yaml/.yml}"
+  done
+  local sessions
+  sessions="$(tmuxinator list | tail -n 1)"
+  for session in ${sessions}; do
+    tmuxinator start "$session"
+  done
+}
+
+stop() {
+  local sessions
+  sessions="$(tmuxinator list | tail -n 1)"
+  for session in ${sessions}; do
+    tmuxinator stop "$session"
+  done
+}
+
+create() {
+  if [ -z "$1" ]; then
+    echo "Usage: $0 create <name>" 2>&1
+    exit 1
+  fi
+  if [ -L ~/dev-sessions/"$1" ]; then
+    echo "Symlink ~/dev-sessions/$1 already exists." 2>&1
+    exit 1
+  fi
+  ln -s "$(pwd)" ~/dev-sessions/"$1"
+  echo "Created symlink ~/dev-sessions/$1 -> $(pwd)" 2>&1
+  echo "Run '$0 gen-dev' to generate tmuxinator config for the new session." 2>&1
+}
+
+delete() {
+  if [ ! -L ~/dev-sessions/"$1" ]; then
+    echo "Symlink ~/dev-sessions/$1 does not exist." 2>&1
+    exit 1
+  fi
+  rm ~/dev-sessions/"$1"
+  echo "Deleted symlink ~/dev-sessions/$1" 2>&1
+  echo "Run '$0 gen-dev' to update tmuxinator config." 2>&1
+}
+
+main() {
+  case $1 in
+    gen-dev)
+      gen-dev
+      ;;
+    start)
+      start
+      ;;
+    stop)
+      stop
+      ;;
+    create)
+      create "$2"
+      ;;
+    delete)
+      delete "$2"
+      ;;
+    *)
+      echo "Usage: $0 {gen-dev|start|stop|create <name>|delete <name>}" 2>&1
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
