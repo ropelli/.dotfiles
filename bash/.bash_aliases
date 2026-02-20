@@ -1,6 +1,7 @@
 alias g='git'
 alias k='kubectl'
 alias h='helm'
+alias gh='gh --repo $(git remote get-url origin | sed '\''s#^.*://##'\'' | sed '\''s#.git\$##'\'')'
 alias gradlew='./gradlew'
 alias gradle='./gradlew'
 alias d='docker'
