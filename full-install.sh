@@ -72,7 +72,7 @@ install_networking_tools() {
 
 install_go() {
     sudo rm -rf /usr/local/go
-    wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -O /tmp/go.tar.gz
+    wget https://go.dev/dl/go1.26.0.linux-amd64.tar.gz -O /tmp/go.tar.gz
     sudo tar -C /usr/local -xzf /tmp/go.tar.gz
     export PATH="$HOME/go/bin:/usr/local/go/bin:$PATH"
     go install -v golang.org/x/tools/gopls@latest
@@ -83,7 +83,7 @@ install_git() {
     dnf_or_apt install -y git git-lfs
     go install github.com/jesseduffield/lazygit@latest
     lazygit --version
-    wget https://github.com/nektos/act/releases/download/v0.2.79/act_Linux_x86_64.tar.gz -O /tmp/act.tar.gz
+    wget https://github.com/nektos/act/releases/download/v0.2.84/act_Linux_x86_64.tar.gz -O /tmp/act.tar.gz
     tar -C ~/.local/bin -xzf /tmp/act.tar.gz
     act --version
 }
@@ -105,11 +105,11 @@ install_podman() {
 }
 
 install_k8s_tools() {
-    go install sigs.k8s.io/kind@v0.26.0
+    go install sigs.k8s.io/kind@v0.31.0
     kind version
-    go install github.com/derailed/k9s@v0.50.9
+    go install github.com/derailed/k9s@v0.50.18
     k9s version
-    wget https://github.com/helmfile/helmfile/releases/download/v1.1.3/helmfile_1.1.3_linux_amd64.tar.gz -O /tmp/helmfile.tar.gz
+    wget https://github.com/helmfile/helmfile/releases/download/v1.4.0/helmfile_1.4.0_linux_amd64.tar.gz -O /tmp/helmfile.tar.gz
     tar -C ~/.local/bin -xzf /tmp/helmfile.tar.gz
     helmfile version
 }
@@ -154,7 +154,7 @@ install_docker() {
 }
 
 install_nodejs() {
-    brew install node@22
+    brew install node@24
     export PATH="/home/linuxbrew/.linuxbrew/opt/node@22/bin:$PATH"
     node -v
     npm -v
