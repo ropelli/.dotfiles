@@ -20,6 +20,15 @@ alias every='xargs -i '
 alias lastword='awk "{print \$NF}"'
 alias millis='date +%s%N | cut -b1-13'
 
+ghrview() {
+  workflow=$1
+  if [ -z "$1" ]; then
+    workflow=$(ghr workflow list --json name | jq -r '.[].name' | fzf --prompt="Select workflow: ")
+  fi
+  id=$(ghr run list -w "$workflow" -L 1 --json databaseId | jq ".[].databaseId")
+  ghr run view --web "$id"
+}
+
 packpngstojpg() {
   for filename in *.png; do
     pngpacktojpg "$filename"
