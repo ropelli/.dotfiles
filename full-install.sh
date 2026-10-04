@@ -160,6 +160,15 @@ install_nodejs() {
     npm -v
 }
 
+install_yazi() {
+    dnf_or_apt install ImageMagick -y
+    brew install yazi
+}
+
+install_ai() {
+    brew install anomalyco/tap/opencode
+}
+
 install_wsl_tools() {
     if ! [ -z $WSL_DISTRO_NAME ]; then
         sudo apt install wslu -y
@@ -180,6 +189,7 @@ install_nvim() {
     cd "$HOME/nvim"
     tar -xzf "$HOME/nvim-linux-x86_64.tar.gz"
     rm -f "$HOME/nvim-linux-x86_64.tar.gz"
+    sudo rm -f "/usr/local/bin/nvim"
     sudo ln -s "$HOME/nvim/nvim-linux-x86_64/bin/nvim" "/usr/local/bin/nvim"
 }
 
@@ -198,6 +208,7 @@ install_all() {
     install_networking_tools
     install_nvim
     install_homebrew
+    install_yazi
     install_fzf
     install_ripgrep
     install_fd
@@ -215,6 +226,7 @@ install_all() {
     install_wsl_tools
     install_markup_tools
     install_subversion
+    install_ai
 }
 
 set -x
