@@ -181,7 +181,19 @@ install_markup_tools() {
     jq --version
 }
 
+install_rust() {
+    if [ -x "$(command -v rustc)" ]; then
+        echo "Rust is already installed"
+        rustup update
+        return 0
+    fi
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env"
+    rustc --version
+}
+
 install_nvim() {
+    cargo install --locked tree-sitter-cli
     rm -fr "$HOME/.local/share/nvim"
     cd "$HOME"
     wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
@@ -206,6 +218,7 @@ install_all() {
     install_compilers
     setup_local_bin
     install_networking_tools
+    install_rust
     install_nvim
     install_homebrew
     install_yazi
