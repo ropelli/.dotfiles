@@ -44,3 +44,6 @@ theme = Dark Modern
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 window-decoration = none
+
+keybind = control+insert=copy_to_clipboard
+keybind = shift+insert=paste_from_clipboard
