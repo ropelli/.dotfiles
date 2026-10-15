@@ -86,6 +86,7 @@ install_git() {
     wget https://github.com/nektos/act/releases/download/v0.2.84/act_Linux_x86_64.tar.gz -O /tmp/act.tar.gz
     tar -C ~/.local/bin -xzf /tmp/act.tar.gz
     act --version
+    brew install gh
 }
 
 install_subversion() {
