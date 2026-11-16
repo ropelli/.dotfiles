@@ -11,23 +11,29 @@ jobs:
       matrix:
         os:
         - image: ubuntu:24.04
-          command: ubuntu
+          name: ubuntu
         - image: fedora:42
-          command: fedora
+          name: fedora
+        - image: cachyos/cachyos-v4@latest
+          name: cachyos
     container:
       image: ${{matrix.os.image}}
     runs-on: ubuntu-latest
     steps:
       - name: install git
-        if: matrix.os.command == 'ubuntu'
+        if: matrix.os.name == 'ubuntu'
         run: |
           apt-get update
           apt-get install git -y
           rm -rf /var/lib/apt/lists/*
       - name: install git
-        if: matrix.os.command == 'fedora'
+        if: matrix.os.name == 'fedora'
         run: |
           dnf install git -y
+      - name: install git
+        if: matrix.os.name == 'cachyos'
+        run: |
+          pacman -Syu --noconfirm git
       - uses: actions/checkout@v4
       - name: workaround github actions nonsense
         run: |
