@@ -5,6 +5,18 @@ dnf_or_apt() {
         sudo dnf "$@"
     elif [ $PKG_MNGR = apt-get ]; then
         sudo apt-get "$@"
+    elif [ $PKG_MNGR = pacman ]; then
+        changed_args=()
+        for arg in "$@"; do
+            if [ "$arg" = "-y" ]; then
+                changed_args+=("--noconfirm")
+            elif [ "$arg" = "install" ]; then
+                changed_args+=("-S")
+            else
+                changed_args+=("$arg")
+            fi
+        done
+        sudo pacman "${changed_args[@]}"
     else
         echo "Unsupported package manager" >&2
         return 1
@@ -35,7 +47,7 @@ install_tpm() {
 }
 
 install_ruby() {
-    if [ $PKG_MNGR = dnf ]; then
+    if [ $PKG_MNGR = dnf ] || [ $PKG_MNGR = pacman ]; then
         dnf_or_apt install -y ruby
     elif [ $PKG_MNGR = apt-get ]; then
         dnf_or_apt install -y ruby-full
@@ -52,7 +64,11 @@ install_tmux() {
 }
 
 install_fd() {
-    dnf_or_apt install -y fd-find
+    if [ "$PKG_MNGR" = pacman ]; then
+        dnf_or_apt install -y fd
+    else
+        dnf_or_apt install -y fd-find
+    fi
 }
 
 install_compilers() {
@@ -60,6 +76,8 @@ install_compilers() {
         dnf_or_apt install -y make automake gcc gcc-c++ kernel-devel
     elif [ $PKG_MNGR = apt-get ]; then
         dnf_or_apt install -y build-essential
+    elif [ $PKG_MNGR = pacman ]; then
+        dnf_or_apt install -y base-devel
     else
         echo "Unsupported package manager" >&2
         return 1
@@ -108,7 +126,7 @@ install_podman() {
 install_k8s_tools() {
     go install sigs.k8s.io/kind@v0.31.0
     kind version
-    go install github.com/derailed/k9s@v0.50.18
+    go install github.com/derailed/k9s@v0.51.0
     k9s version
     wget https://github.com/helmfile/helmfile/releases/download/v1.4.0/helmfile_1.4.0_linux_amd64.tar.gz -O /tmp/helmfile.tar.gz
     tar -C ~/.local/bin -xzf /tmp/helmfile.tar.gz
@@ -130,16 +148,20 @@ install_docker() {
         sudo install -m 0755 -d /etc/apt/keyrings
         sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
         sudo chmod a+r /etc/apt/keyrings/docker.asc
-    
+ 
         # Add the repository to Apt sources:
         echo \
             "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
             $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
             sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
         sudo apt-get update
-    
+
         # Install latest
         sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+        sudo docker run --rm hello-world
+    elif [ $PKG_MNGR = pacman ]; then
+        sudo pacman -Syu --noconfirm docker
+        sudo systemctl enable --now docker
         sudo docker run --rm hello-world
     else
         echo "Unsupported package manager" >&2
@@ -162,7 +184,11 @@ install_nodejs() {
 }
 
 install_yazi() {
-    dnf_or_apt install ImageMagick -y
+    if [ "$PKG_MNGR" = pacman ]; then
+        dnf_or_apt install imagemagick -y
+    else
+        dnf_or_apt install ImageMagick -y
+    fi
     brew install yazi
 }
 
@@ -249,6 +275,8 @@ if command -v dnf >/dev/null; then
     PKG_MNGR=dnf
 elif command -v apt-get >/dev/null; then
     PKG_MNGR=apt-get
+elif command -v pacman >/dev/null; then
+    PKG_MNGR=pacman
 else
     PKG_MNGR=unsupported
     echo "Unsupported package manager" >&2
