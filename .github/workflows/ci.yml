@@ -40,6 +40,6 @@ jobs:
           chown -R $(id -un):$(id -gn) .
       - name: install
         env:
-          command: ${{matrix.os.command}}
+          command: ${{matrix.os.name}}
         run: |
           ./test-full-install.sh "$command"
