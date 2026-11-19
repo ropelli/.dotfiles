@@ -14,7 +14,7 @@ jobs:
           name: ubuntu
         - image: fedora:42
           name: fedora
-        - image: cachyos/cachyos@latest
+        - image: cachyos/cachyos:latest
           name: cachyos
     container:
       image: ${{matrix.os.image}}
