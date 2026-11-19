@@ -33,10 +33,27 @@ install_fedora() {
     su testuser -c "bash -c 'cd /home/testuser/.dotfiles && rm -f ~/.profile ~/.bashrc ~/.bash_profile ~/.bash_aliases && ./full-install.sh'"
 }
 
+install_cachyos() {
+    sudo pacman -S wget
+
+    useradd --create-home --shell /bin/bash testuser
+    usermod -aG wheel testuser
+    echo 'testuser ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+    cp -a . /home/testuser/.dotfiles
+    cd /home/testuser/.dotfiles
+    git submodule update --init --recursive
+    git submodule update --recursive --remote
+    chown -R testuser:testuser /home/testuser/.dotfiles
+    su testuser -c "bash -c 'cd /home/testuser/.dotfiles && rm -f ~/.profile ~/.bashrc ~/.bash_profile ~/.bash_aliases && ./full-install.sh'"
+}
+
 if [[ "$1" == "ubuntu" ]]; then
     install_ubuntu
 elif [[ "$1" == "fedora" ]]; then
     install_fedora
+elif [[ "$1" == "cachyos" ]]; then
+    install_cachyos
 else
     echo "Unsupported distro '$1'" >&2
     exit 1
