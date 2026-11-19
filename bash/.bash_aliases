@@ -6,6 +6,7 @@ alias gradlew='./gradlew'
 alias gradle='./gradlew'
 alias d='docker'
 alias cuts='cut -d" " -f'
+alias lg='nvim -c "LazyGit"'
 
 alias context='kubectl config current-context'
 alias debug='kubectl run -ti --rm=true debug --image=busybox'
